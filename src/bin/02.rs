@@ -1,28 +1,27 @@
 use advent_of_code_2019::intcode::IntCode;
 
-fn run_with_args( computer: &mut IntCode, w1: i64, w2: i64 ) -> i64 {
+fn run_with_args(computer: &mut IntCode, w1: i64, w2: i64) -> i64 {
     computer.memory[1] = w1;
     computer.memory[2] = w2;
     computer.run();
     computer.memory[0]
 }
 
-fn solve( input: &str, target: i64 ) -> (i64, Option<i64>) {
+fn solve(input: &str, target: i64) -> (i64, Option<i64>) {
     let program: Vec<_> = input.trim().split(',').map(|s| s.parse::<i64>().unwrap()).collect();
     let mut c = IntCode::new(&program);
-    
+
     let output = run_with_args(&mut c, 12, 2);
-    
+
     let mut args = None;
-    'search:
-    for i in 0..100 {
+    'search: for i in 0..100 {
         for j in 0..100 {
             c.reset(&program);
             if run_with_args(&mut c, i, j) == target {
-                args = Some(i*100 + j);
+                args = Some(i * 100 + j);
                 break 'search;
             }
-        }  
+        }
     }
 
     (output, args)
@@ -39,7 +38,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn example01() {
         let mut c = IntCode::new(&[1,9,10,3,2,3,11,0,99,30,40,50]);

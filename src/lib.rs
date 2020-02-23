@@ -1,3 +1,3 @@
-pub mod intcode;
-pub mod grid;
 pub mod graph;
+pub mod grid;
+pub mod intcode;

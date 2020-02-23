@@ -1,13 +1,13 @@
+use advent_of_code_2019::grid::{Direction::*, Grid, Location};
 use std::collections::HashMap;
 use std::collections::HashSet;
-use advent_of_code_2019::grid::{Grid, Location, Direction::*};
 
 // This struct stores the positions of the bugs as pairs
 // (level, x-y coordinates).
 struct BugsMap(HashSet<(i64, Location)>);
 
 impl BugsMap {
-    fn create_from( s: &str ) -> BugsMap {
+    fn create_from(s: &str) -> BugsMap {
         let mut bugs = HashSet::new();
         let g = Grid::create_from(s);
         for (l, c) in g.symbols.iter() {
@@ -17,12 +17,12 @@ impl BugsMap {
         }
         BugsMap(bugs)
     }
-    
-    fn to_string( &self ) -> String {
+
+    fn to_string(&self) -> String {
         let mut s = String::new();
         for y in 0..5 {
             for x in 0..5 {
-                if self.0.contains(&(0, Location{ x, y })) {
+                if self.0.contains(&(0, Location { x, y })) {
                     s.push('#');
                 } else {
                     s.push('.');
@@ -33,7 +33,7 @@ impl BugsMap {
         s
     }
 
-    fn to_string_multilevel( &self ) -> String {
+    fn to_string_multilevel(&self) -> String {
         let mut s = String::new();
         let z_min = *self.0.iter().map(|(z, _)| z).min().unwrap_or(&0);
         let z_max = *self.0.iter().map(|(z, _)| z).max().unwrap_or(&0);
@@ -43,7 +43,7 @@ impl BugsMap {
                 for x in 0..5 {
                     if x == 2 && y == 2 {
                         s.push('?');
-                    } else if self.0.contains(&(z, Location{ x, y })) {
+                    } else if self.0.contains(&(z, Location { x, y })) {
                         s.push('#');
                     } else {
                         s.push('.');
@@ -55,12 +55,12 @@ impl BugsMap {
         s
     }
 
-    fn biodiversity( &self ) -> usize {
+    fn biodiversity(&self) -> usize {
         let mut rating = 0;
         let mut points = 1;
         for y in 0..5 {
             for x in 0..5 {
-                if self.0.contains(&(0, Location{ x, y })) {
+                if self.0.contains(&(0, Location { x, y })) {
                     rating += points;
                 }
                 points *= 2;
@@ -69,7 +69,7 @@ impl BugsMap {
         rating
     }
 
-    fn advance( &mut self ) {
+    fn advance(&mut self) {
         // count neighbouring bugs
         let mut count = HashMap::new();
         for (level, location) in self.0.iter() {
@@ -183,20 +183,24 @@ impl BugsMap {
         for (bug, n) in count.into_iter() {
             if self.0.contains(&bug) {
                 match n {
-                    1 => {},
-                    _ => { self.0.remove(&bug); },
+                    1 => {}
+                    _ => {
+                        self.0.remove(&bug);
+                    }
                 }
             } else {
                 match n {
-                    1|2 => { self.0.insert(bug); },
-                    _   => {},
+                    1 | 2 => {
+                        self.0.insert(bug);
+                    }
+                    _ => {}
                 }
             }
         }
     }
 }
 
-fn solve( input: &str, n: usize ) -> (usize, usize) {
+fn solve(input: &str, n: usize) -> (usize, usize) {
     let mut bugs = BugsMap::create_from(input);
     println!("{}", bugs.to_string());
 
@@ -215,7 +219,7 @@ fn solve( input: &str, n: usize ) -> (usize, usize) {
         bugs.advance_multilevel();
     }
     //println!("{}", bugs.to_string_multilevel());
-    
+
     (current_b, bugs.0.len())
 }
 
@@ -230,47 +234,61 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn example01() {
-        let mut bugs = BugsMap::create_from("\
+        let mut bugs = BugsMap::create_from(
+            "\
 ....#
 #..#.
 #..##
 ..#..
-#....");
+#....",
+        );
         bugs.advance();
-        assert_eq!(bugs.to_string(), "\
+        assert_eq!(
+            bugs.to_string(),
+            "\
 #..#.
 ####.
 ###.#
 ##.##
 .##..
-");
+"
+        );
         bugs.advance();
-        assert_eq!(bugs.to_string(), "\
+        assert_eq!(
+            bugs.to_string(),
+            "\
 #####
 ....#
 ....#
 ...#.
 #.###
-");
+"
+        );
         bugs.advance();
-        assert_eq!(bugs.to_string(), "\
+        assert_eq!(
+            bugs.to_string(),
+            "\
 #....
 ####.
 ...##
 #.##.
 .##.#
-");
+"
+        );
         bugs.advance();
-        assert_eq!(bugs.to_string(), "\
+        assert_eq!(
+            bugs.to_string(),
+            "\
 ####.
 ....#
 ##..#
 .....
 ##...
-");
+"
+        );
         let mut seen_b = HashSet::new();
         let mut current_b = bugs.biodiversity();
         while !seen_b.contains(&current_b) {
@@ -278,28 +296,35 @@ mod tests {
             bugs.advance();
             current_b = bugs.biodiversity();
         }
-        assert_eq!(bugs.to_string(), "\
+        assert_eq!(
+            bugs.to_string(),
+            "\
 .....
 .....
 .....
 #....
 .#...
-");
+"
+        );
         assert_eq!(current_b, 2129920);
     }
 
     #[test]
     fn example02() {
-        let mut bugs = BugsMap::create_from("\
+        let mut bugs = BugsMap::create_from(
+            "\
 ....#
 #..#.
 #.?##
 ..#..
-#....");
+#....",
+        );
         for _ in 0..10 {
             bugs.advance_multilevel();
         }
-        assert_eq!(bugs.to_string_multilevel(), "\
+        assert_eq!(
+            bugs.to_string_multilevel(),
+            "\
 Depth -5:
 ..#..
 .#.#.
@@ -366,6 +391,7 @@ Depth 5:
 #.?#.
 ####.
 .....
-");
+"
+        );
     }
 }

@@ -1,7 +1,8 @@
 use advent_of_code_2019::intcode::IntCode;
 
-fn solve( input: &str ) -> (i64, i64) {
+fn solve(input: &str) -> (i64, i64) {
     let program: Vec<_> = input.trim().split(',').map(|s| s.parse::<i64>().unwrap()).collect();
+
     let mut droid = IntCode::new(&program);
     droid.run_ascii_command("");
     droid.run_ascii_command("OR A J"); // J = A
@@ -24,7 +25,7 @@ fn solve( input: &str ) -> (i64, i64) {
     droid.run_ascii_command("AND D J"); // J = D && (H || (E && (I || F)))
     droid.run_ascii_command("AND T J"); // J = !(A && B && C) && D && (H || (E && (I || F)))
     let (_, hull_damage_ext) = droid.run_ascii_command("RUN");
-    
+
     (hull_damage[0], hull_damage_ext[0])
 }
 

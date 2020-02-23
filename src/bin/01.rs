@@ -1,17 +1,19 @@
-fn fuel_for_mass( m: i64 ) -> i64 {
-    m/3-2
+fn fuel_for_mass(m: i64) -> i64 {
+    m / 3 - 2
 }
 
-fn fuel_for_mass_and_fuel( mut m: i64 ) -> i64 {
+fn fuel_for_mass_and_fuel(mut m: i64) -> i64 {
     let mut total = 0;
     loop {
         m = fuel_for_mass(m);
-        if m <= 0 { break total; }
+        if m <= 0 {
+            break total;
+        }
         total += m;
     }
 }
 
-fn solve( input: &str ) -> (i64, i64) {
+fn solve(input: &str) -> (i64, i64) {
     let v: Vec<_> = input.lines().map(|s| s.parse::<i64>().unwrap()).collect();
 
     let fuel_for_mass = v.iter().map(|&m| fuel_for_mass(m)).sum::<i64>();
@@ -31,24 +33,24 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn example01() {
-        assert_eq!(solve("12"), (2,2));
+        assert_eq!(solve("12"), (2, 2));
     }
 
     #[test]
     fn example02() {
-        assert_eq!(solve("14"), (2,2));
+        assert_eq!(solve("14"), (2, 2));
     }
 
     #[test]
     fn example03() {
-        assert_eq!(solve("1969"), (654,966));
+        assert_eq!(solve("1969"), (654, 966));
     }
 
     #[test]
     fn example04() {
-        assert_eq!(solve("100756"), (33583,50346));
+        assert_eq!(solve("100756"), (33583, 50346));
     }
 }

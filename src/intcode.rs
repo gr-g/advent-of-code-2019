@@ -12,7 +12,7 @@ pub struct IntCode {
 }
 
 impl IntCode {
-    pub fn new( program: &[i64] ) -> IntCode {
+    pub fn new(program: &[i64]) -> IntCode {
         IntCode {
             memory: program.to_vec(),
             input: VecDeque::new(),
@@ -22,8 +22,8 @@ impl IntCode {
             base: 0,
         }
     }
-    
-    pub fn reset( &mut self, program: &[i64] ) {
+
+    pub fn reset(&mut self, program: &[i64]) {
         self.memory.clear();
         self.memory.extend_from_slice(program);
         self.input.clear();
@@ -32,11 +32,11 @@ impl IntCode {
         self.base = 0;
     }
 
-    pub fn is_halted( &self ) -> bool {
+    pub fn is_halted(&self) -> bool {
         self.memory[self.ptr] == 99
     }
-    
-    pub fn run( &mut self ) {
+
+    pub fn run(&mut self) {
         loop {
             let (op, op_len, (a1, a2, a3)) = self.decode(self.memory[self.ptr]);
             match op {
@@ -54,8 +54,8 @@ impl IntCode {
             }
         }
     }
-    
-    pub fn run_ascii_command( &mut self, command: &str ) -> (String, Vec<i64>) {
+
+    pub fn run_ascii_command(&mut self, command: &str) -> (String, Vec<i64>) {
         // load command
         if !command.is_empty() {
             if self.display {
@@ -66,14 +66,14 @@ impl IntCode {
             }
             self.input.push_back(b'\n' as i64);
         }
-        
+
         // execute
         self.run();
-        
+
         // extract output
         let mut s = String::new();
-        let mut rests = vec!();
-        
+        let mut rests = vec![];
+
         for c in self.output.drain(..) {
             match c {
                 n if n > 0 && n < 128 => { s.push(n as u8 as char); },
@@ -85,31 +85,31 @@ impl IntCode {
         }
         (s, rests)
     }
-    
+
     // set the opcode, its length, and the parameter addresses for the current instruction
-    fn decode( &mut self, mut instr: i64 ) -> (i64, usize, (usize, usize, usize)) {
+    fn decode(&mut self, mut instr: i64) -> (i64, usize, (usize, usize, usize)) {
         let op = instr % 100;
         instr /= 100;
-        
+
         let op_len = match op {
-            1|2|7|8 => 4,
-            3|4|9 => 2,
-            5|6 => 3,
+            1 | 2 | 7 | 8 => 4,
+            3 | 4 | 9 => 2,
+            5 | 6 => 3,
             99 => 1,
             _ => panic!("invalid opcode {}", op),
         };
-        
+
         let mut addr = [0; 3];
-        for p in 0..op_len-1 {
-            let ptr = self.ptr+1+p;
+        for p in 0..op_len - 1 {
+            let ptr = self.ptr + 1 + p;
             addr[p] = match instr % 10 {
                 0 => self.memory[ptr].try_into().expect("invalid address"),
                 1 => ptr,
                 2 => (self.base + self.memory[ptr]).try_into().unwrap(),
-                _ => panic!("invalid instruction {}", instr)
+                _ => panic!("invalid instruction {}", instr),
             };
             if addr[p] >= self.memory.len() {
-                self.memory.resize(addr[p]+1, 0);
+                self.memory.resize(addr[p] + 1, 0);
             }
             instr /= 10;
         }

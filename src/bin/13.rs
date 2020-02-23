@@ -1,6 +1,6 @@
-use std::cmp::Ordering;
-use advent_of_code_2019::intcode::IntCode;
 use advent_of_code_2019::grid::{Grid, Location};
+use advent_of_code_2019::intcode::IntCode;
+use std::cmp::Ordering;
 
 struct Game {
     computer: IntCode,
@@ -11,8 +11,8 @@ struct Game {
 }
 
 impl Game {
-    fn new( program: &[i64] ) -> Game {
-        Game{
+    fn new(program: &[i64]) -> Game {
+        Game {
             computer: IntCode::new(program),
             screen: Grid::new(),
             paddle: (0, 0),
@@ -21,11 +21,11 @@ impl Game {
         }
     }
 
-    fn set_move( &mut self, m: i64 ) {
+    fn set_move(&mut self, m: i64) {
         self.computer.input.push_back(m);
     }
 
-    fn run( &mut self ) {
+    fn run(&mut self) {
         self.computer.run();
         for cell in self.computer.output.chunks_exact(3) {
             match *cell {
@@ -34,14 +34,14 @@ impl Game {
                 [x, y, 1] => { self.screen.insert(Location{ x, y }, '#'); },
                 [x, y, 2] => { self.screen.insert(Location{ x, y }, '\u{2588}'); },
                 [x, y, 3] => {
-                    self.screen.insert(Location{ x, y }, '_');
+                    self.screen.insert(Location { x, y }, '_');
                     self.paddle = (x, y);
-                },
+                }
                 [x, y, 4] => {
-                    self.screen.insert(Location{ x, y }, 'o');
+                    self.screen.insert(Location { x, y }, 'o');
                     self.ball = (x, y);
-                },
-                _ => panic!()
+                }
+                _ => panic!(),
             }
         }
         self.computer.output.clear();
@@ -51,7 +51,7 @@ impl Game {
     }
 }
 
-fn solve( input: &str ) -> (usize, i64) {
+fn solve(input: &str) -> (usize, i64) {
     let program: Vec<_> = input.trim().split(',').map(|s| s.parse::<i64>().unwrap()).collect();
     let mut g = Game::new(&program);
     g.run();
@@ -68,7 +68,7 @@ fn solve( input: &str ) -> (usize, i64) {
             Ordering::Greater => g.set_move(-1),
         }
     }
-    
+
     (blocks, g.score)
 }
 

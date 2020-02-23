@@ -1,16 +1,18 @@
-use advent_of_code_2019::intcode::IntCode;
-use advent_of_code_2019::grid::{Grid, Direction::*};
 use advent_of_code_2019::graph::Backtracking;
+use advent_of_code_2019::grid::{Direction::*, Grid};
+use advent_of_code_2019::intcode::IntCode;
 
-fn alignment_parameters( area: &Grid ) -> i64 {
-    area.symbols.iter()
+fn alignment_parameters(area: &Grid) -> i64 {
+    area.symbols
+        .iter()
         .filter(|(location, value)| {
-            **value == '#' &&
-                area.get(&location.go(Up)) == Some(&'#') &&
-                area.get(&location.go(Down)) == Some(&'#') &&
-                area.get(&location.go(Left)) == Some(&'#') &&
-                area.get(&location.go(Right)) == Some(&'#')
-        }).map(|(location, _)| location.x * location.y)
+            **value == '#'
+                && area.get(&location.go(Up)) == Some(&'#')
+                && area.get(&location.go(Down)) == Some(&'#')
+                && area.get(&location.go(Left)) == Some(&'#')
+                && area.get(&location.go(Right)) == Some(&'#')
+        })
+        .map(|(location, _)| location.x * location.y)
         .sum()
 }
 
@@ -30,17 +32,17 @@ struct Compression<'a, T> {
 }
 
 impl<'a, T> Compression<'a, T> {
-    fn new( source: &'a [T], max_len: usize ) -> Compression<'a, T> {
-        Compression{
+    fn new(source: &'a [T], max_len: usize) -> Compression<'a, T> {
+        Compression {
             source,
             max_len,
             index: 0,
             subs: [(0, 0); 3],
-            compressed: Vec::new()
+            compressed: Vec::new(),
         }
     }
-    
-    fn get_sub( &self, sub: usize ) -> &'a [T] {
+
+    fn get_sub(&self, sub: usize) -> &'a [T] {
         let (pos, len) = self.subs[sub];
         &self.source[pos..pos + len]
     }
@@ -54,40 +56,42 @@ struct CompressionStep {
 impl<'a, T: Eq> Backtracking for Compression<'a, T> {
     type Action = CompressionStep;
 
-    fn list_actions( &self ) -> Vec<CompressionStep> {
+    fn list_actions(&self) -> Vec<CompressionStep> {
         let mut v = Vec::new();
         for sub in 0..self.subs.len() {
             let (pos, len) = self.subs[sub];
             if len == 0 {
                 // sub-sequence not defined yet, try various lengths
                 for len in 1..=self.max_len {
-                    v.push(CompressionStep{ sub, len });
+                    v.push(CompressionStep { sub, len });
                 }
                 return v;
             } else {
                 // check if this sub-sequence matches the next len elements
-                if self.index + len <= self.source.len() &&
-                   self.source[self.index..self.index + len] == self.source[pos..pos + len] {
-                    v.push(CompressionStep{ sub, len });
+                if self.index + len <= self.source.len()
+                    && self.source[self.index..self.index + len] == self.source[pos..pos + len]
+                {
+                    v.push(CompressionStep { sub, len });
                 }
             }
         }
         v
     }
 
-    fn try_action( &mut self, action: &CompressionStep ) -> bool {
-        let CompressionStep{ sub, len } = *action;
+    fn try_action(&mut self, action: &CompressionStep) -> bool {
+        let CompressionStep { sub, len } = *action;
         if self.subs[sub].1 == 0 {
             // sub-sequence was not defined, define it now
             self.subs[sub] = (self.index, len);
         }
         self.index += len;
-        self.compressed.push(((b'A' + sub as u8) as char).to_string());
+        self.compressed
+            .push(((b'A' + sub as u8) as char).to_string());
         true
     }
 
-    fn backtrack( &mut self, action: &CompressionStep ) {
-        let CompressionStep{ sub, len } = *action;
+    fn backtrack(&mut self, action: &CompressionStep) {
+        let CompressionStep { sub, len } = *action;
         self.index -= len;
         self.compressed.pop();
         if self.index == self.subs[sub].0 {
@@ -96,22 +100,24 @@ impl<'a, T: Eq> Backtracking for Compression<'a, T> {
         }
     }
 
-    fn is_solution( &self ) -> bool {
+    fn is_solution(&self) -> bool {
         self.index == self.source.len()
     }
 }
 
-fn plan_path( area: &Grid ) -> Vec<String> {
+fn plan_path(area: &Grid) -> Vec<String> {
     // find the robot (position and direction) in the map
-    let (mut pos, mut dir) = area.symbols.iter().find_map(|(location, value)| {
-        match value {
+    let (mut pos, mut dir) = area
+        .symbols
+        .iter()
+        .find_map(|(location, value)| match value {
             '^' => Some((*location, Up)),
             'v' => Some((*location, Down)),
             '<' => Some((*location, Left)),
             '>' => Some((*location, Right)),
             _ => None,
-        }
-    }).unwrap();
+        })
+        .unwrap();
 
     let mut path = Vec::new();
     loop {
@@ -139,9 +145,7 @@ fn plan_path( area: &Grid ) -> Vec<String> {
     path
 }
 
-
-
-fn solve( input: &str ) -> (i64, i64) {
+fn solve(input: &str) -> (i64, i64) {
     let program: Vec<_> = input.trim().split(',').map(|s| s.parse::<i64>().unwrap()).collect();
 
     // map the surroundings
@@ -159,7 +163,7 @@ fn solve( input: &str ) -> (i64, i64) {
     // compress the path
     let mut p = Compression::new(&path, 5);
     p.explore().expect("no suitable compression found");
-    
+
     // send the robot on its way
     computer.reset(&program);
     computer.memory[0] = 2;
@@ -184,23 +188,26 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn example01() {
-        let area = Grid::create_from("\
+        let area = Grid::create_from(
+            "\
 ..#..........
 ..#..........
 #######...###
 #.#...#...#.#
 #############
 ..#...#...#..
-..#####...^..");
+..#####...^..",
+        );
         assert_eq!(alignment_parameters(&area), 76);
     }
 
     #[test]
     fn example02() {
-        let area = Grid::create_from("\
+        let area = Grid::create_from(
+            "\
 #######...#####
 #.....#...#...#
 #.....#...#...#
@@ -215,9 +222,13 @@ mod tests {
 ....#...#......
 ....#...#......
 ....#...#......
-....#####......");
+....#####......",
+        );
         let path = plan_path(&area);
-        assert_eq!(path.join(","), "R,8,R,8,R,4,R,4,R,8,L,6,L,2,R,4,R,4,R,8,R,8,R,8,L,6,L,2".to_string());
+        assert_eq!(
+            path.join(","),
+            "R,8,R,8,R,4,R,4,R,8,L,6,L,2,R,4,R,4,R,8,R,8,R,8,L,6,L,2".to_string()
+        );
         let mut p = Compression::new(&path, 3);
         p.explore().unwrap();
         println!("Path compressed as: {:?}", p.compressed);

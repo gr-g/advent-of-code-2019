@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-use advent_of_code_2019::grid::{Grid, Location, Direction::*};
 use advent_of_code_2019::graph::UnweightedGraph;
+use advent_of_code_2019::grid::{Direction::*, Grid, Location};
+use std::collections::HashMap;
 
 struct GridWithPortals {
     grid: Grid,
@@ -11,7 +11,7 @@ struct GridWithPortals {
 }
 
 impl GridWithPortals {
-    fn create_from( s: &str ) -> GridWithPortals {
+    fn create_from(s: &str) -> GridWithPortals {
         let grid = Grid::create_from(s);
         let mut inner_tag = HashMap::new();
         let mut inner_portal = HashMap::new();
@@ -34,10 +34,10 @@ impl GridWithPortals {
                                     s
                                 }
                             };
-                            if l.x < grid.x_min() + 3 ||
-                               l.x > grid.x_max() - 3 ||
-                               l.y < grid.y_min() + 3 ||
-                               l.y > grid.y_max() - 3
+                            if l.x < grid.x_min() + 3
+                                || l.x > grid.x_max() - 3
+                                || l.y < grid.y_min() + 3
+                                || l.y > grid.y_max() - 3
                             {
                                 outer_tag.insert(*l, s.clone());
                                 outer_portal.insert(s, *l);
@@ -50,7 +50,7 @@ impl GridWithPortals {
                 }
             }
         }
-        GridWithPortals{
+        GridWithPortals {
             grid,
             inner_tag,
             inner_portal,
@@ -61,7 +61,7 @@ impl GridWithPortals {
 }
 
 impl UnweightedGraph<Location> for GridWithPortals {
-    fn edges( &self, node: &Location ) -> Vec<Location> {
+    fn edges(&self, node: &Location) -> Vec<Location> {
         let mut v = Vec::new();
 
         // regular move
@@ -94,12 +94,12 @@ struct LayeredLocation {
 }
 
 impl UnweightedGraph<LayeredLocation> for GridWithPortals {
-    fn edges( &self, node: &LayeredLocation ) -> Vec<LayeredLocation> {
+    fn edges(&self, node: &LayeredLocation) -> Vec<LayeredLocation> {
         let mut v = Vec::new();
 
         // regular move
         for d in &[Up, Down, Left, Right] {
-            let next_node = LayeredLocation{
+            let next_node = LayeredLocation {
                 location: node.location.go(*d),
                 layer: node.layer,
             };
@@ -110,7 +110,7 @@ impl UnweightedGraph<LayeredLocation> for GridWithPortals {
         // move from inner portal to outer portal
         if let Some(s) = self.inner_tag.get(&node.location) {
             if let Some(l) = self.outer_portal.get(s) {
-                let next_node = LayeredLocation{
+                let next_node = LayeredLocation {
                     location: *l,
                     layer: node.layer + 1,
                 };
@@ -121,7 +121,7 @@ impl UnweightedGraph<LayeredLocation> for GridWithPortals {
         if node.layer > 0 {
             if let Some(s) = self.outer_tag.get(&node.location) {
                 if let Some(l) = self.inner_portal.get(s) {
-                    let next_node = LayeredLocation{
+                    let next_node = LayeredLocation {
                         location: *l,
                         layer: node.layer - 1,
                     };
@@ -133,28 +133,25 @@ impl UnweightedGraph<LayeredLocation> for GridWithPortals {
     }
 }
 
-fn solve( input: &str ) -> (usize, usize) {
+fn solve(input: &str) -> (usize, usize) {
     let g = GridWithPortals::create_from(input);
     println!("{}", g.grid);
-    
+
     let start = g.outer_portal["AA"];
     let target = g.outer_portal["ZZ"];
     let distances = g.shortest_paths(start, &[target]);
-    
-    let layered_start = LayeredLocation{
+
+    let layered_start = LayeredLocation {
         location: g.outer_portal["AA"],
         layer: 0,
     };
-    let layered_target = LayeredLocation{
+    let layered_target = LayeredLocation {
         location: g.outer_portal["ZZ"],
         layer: 0,
     };
     let layered_distances = g.shortest_paths(layered_start, &[layered_target]);
 
-    (
-        distances[&target],
-        layered_distances[&layered_target],
-    )
+    (distances[&target], layered_distances[&layered_target])
 }
 
 fn main() {
@@ -168,10 +165,11 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn example01() {
-        let g = GridWithPortals::create_from("
+        let g = GridWithPortals::create_from(
+            "
          A           
          A           
   #######.#########  
@@ -190,16 +188,17 @@ DE..#######...###.#
 FG..#########.....#  
   ###########.#####  
              Z       
-             Z       ");
+             Z       ",
+        );
         let start = g.outer_portal["AA"];
         let target = g.outer_portal["ZZ"];
         let distances = g.shortest_paths(start, &[target]);
         assert_eq!(distances[&target], 23);
-        let layered_start = LayeredLocation{
+        let layered_start = LayeredLocation {
             location: g.outer_portal["AA"],
             layer: 0,
         };
-        let layered_target = LayeredLocation{
+        let layered_target = LayeredLocation {
             location: g.outer_portal["ZZ"],
             layer: 0,
         };
@@ -209,7 +208,8 @@ FG..#########.....#
 
     #[test]
     fn example02() {
-        let g = GridWithPortals::create_from("
+        let g = GridWithPortals::create_from(
+            "
                    A               
                    A               
   #################.#############  
@@ -246,7 +246,8 @@ YN......#               VT..#....QG
   #.#.........#...#.............#  
   #########.###.###.#############  
            B   J   C               
-           U   P   P               ");
+           U   P   P               ",
+        );
         let start = g.outer_portal["AA"];
         let target = g.outer_portal["ZZ"];
         let distances = g.shortest_paths(start, &[target]);
@@ -255,7 +256,8 @@ YN......#               VT..#....QG
 
     #[test]
     fn example03() {
-        let g = GridWithPortals::create_from("
+        let g = GridWithPortals::create_from(
+            "
              Z L X W       C                 
              Z P Q B       K                 
   ###########.#.#.#.#######.###############  
@@ -292,12 +294,13 @@ RE....#.#                           #......RF
   #.......#.....#.#...#...............#...#  
   #############.#.#.###.###################  
                A O F   N                     
-               A A D   M                     ");
-        let layered_start = LayeredLocation{
+               A A D   M                     ",
+        );
+        let layered_start = LayeredLocation {
             location: g.outer_portal["AA"],
             layer: 0,
         };
-        let layered_target = LayeredLocation{
+        let layered_target = LayeredLocation {
             location: g.outer_portal["ZZ"],
             layer: 0,
         };

@@ -10,7 +10,7 @@ pub enum Direction {
 }
 
 impl Direction {
-    pub fn left( self ) -> Direction {
+    pub fn left(self) -> Direction {
         match self {
             Self::Up => Self::Left,
             Self::Down => Self::Right,
@@ -19,7 +19,7 @@ impl Direction {
         }
     }
 
-    pub fn right( self ) -> Direction {
+    pub fn right(self) -> Direction {
         match self {
             Self::Up => Self::Right,
             Self::Down => Self::Left,
@@ -28,7 +28,7 @@ impl Direction {
         }
     }
 
-    pub fn reverse( self ) -> Direction {
+    pub fn reverse(self) -> Direction {
         match self {
             Self::Up => Self::Down,
             Self::Down => Self::Up,
@@ -45,7 +45,7 @@ pub struct Location {
 }
 
 impl Location {
-    pub fn go( &self, direction: Direction ) -> Location {
+    pub fn go(&self, direction: Direction) -> Location {
         match direction {
             Direction::Up => Location{ x: self.x, y: self.y - 1 },
             Direction::Down => Location{ x: self.x, y: self.y + 1 },
@@ -64,7 +64,7 @@ impl Grid {
     pub fn new() -> Grid {
         Grid { symbols: HashMap::new() }
     }
-    pub fn create_from( s: &str ) -> Grid {
+    pub fn create_from(s: &str) -> Grid {
         let mut symbols = HashMap::new();
         let mut x = 0;
         let mut y = 0;
@@ -76,7 +76,7 @@ impl Grid {
                         symbols.insert(Location { x, y }, c);
                     }
                     x += 1;
-                },
+                }
             }
         }
         Grid { symbols }
@@ -93,13 +93,13 @@ impl Grid {
     pub fn y_max( &self ) -> i64 {
         *self.symbols.keys().map(|Location { y, .. }| y).max().unwrap_or(&0)
     }
-    pub fn get( &self, l: &Location ) -> Option<&char> {
+    pub fn get(&self, l: &Location) -> Option<&char> {
         self.symbols.get(l)
     }
-    pub fn insert( &mut self, l: Location, c: char ) -> Option<char> {
+    pub fn insert(&mut self, l: Location, c: char) -> Option<char> {
         self.symbols.insert(l, c)
     }
-    pub fn remove( &mut self, l: &Location ) -> Option<char> {
+    pub fn remove(&mut self, l: &Location) -> Option<char> {
         self.symbols.remove(l)
     }
     pub fn find( &self, c: char ) -> Option<&Location> {
@@ -116,7 +116,7 @@ impl Display for Grid {
 
         for y in y0..=y1 {
             for x in x0..=x1 {
-                write!(f, "{}", self.get(&Location{ x, y }).unwrap_or(&' '))?;
+                write!(f, "{}", self.get(&Location { x, y }).unwrap_or(&' '))?;
             }
             writeln!(f)?;
         }

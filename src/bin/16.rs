@@ -36,18 +36,18 @@
 
 // This function applies a number of FFT phases to the tail of the input
 // vector (from offset to the end of the vector).
-fn fft( v: &mut [i64], phases: usize, offset: usize ) {
+fn fft(v: &mut [i64], phases: usize, offset: usize) {
     let n = v.len();
 
     for _ in 0..phases {
         // v := inv(D) v
-        for i in (offset..n-1).rev() {
-            v[i] += v[i+1]
+        for i in (offset..n - 1).rev() {
+            v[i] += v[i + 1]
         }
 
         // v := PD v,
-        for i in offset..n/2 {
-            let step = i+1;
+        for i in offset..n / 2 {
+            let step = i + 1;
             let mut j = i;
             loop {
                 j += step; if j >= n { break; }; v[i] -= v[j];
@@ -64,14 +64,15 @@ fn fft( v: &mut [i64], phases: usize, offset: usize ) {
     }
 }
 
-fn solve( input: &str ) -> (String, String) {
-    let mut signal: Vec<_> = input.trim()
+fn solve(input: &str) -> (String, String) {
+    let mut signal: Vec<_> = input
+        .trim()
         .chars()
         .map(|c| c.to_digit(10).unwrap() as i64)
         .collect();
 
     fft(&mut signal, 100, 0);
-    
+
     let message = signal[0..8]
         .iter()
         .map(|d| std::char::from_digit(*d as u32, 10).unwrap())
@@ -79,7 +80,8 @@ fn solve( input: &str ) -> (String, String) {
 
     let offset = input[0..7].parse().unwrap();
 
-    let mut real_signal: Vec<_> = input.trim()
+    let mut real_signal: Vec<_> = input
+        .trim()
         .repeat(10000)
         .chars()
         .map(|c| c.to_digit(10).unwrap() as i64)
@@ -91,10 +93,10 @@ fn solve( input: &str ) -> (String, String) {
 
     fft(&mut real_signal, 100, offset);
 
-    let real_message = real_signal[offset..offset+8]
-            .iter()
-            .map(|d| std::char::from_digit(*d as u32, 10).unwrap())
-            .collect();
+    let real_message = real_signal[offset..offset + 8]
+        .iter()
+        .map(|d| std::char::from_digit(*d as u32, 10).unwrap())
+        .collect();
 
     (message, real_message)
 }
@@ -110,7 +112,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn example01() {
         let mut v = [1, 2, 3, 4, 5, 6, 7, 8];

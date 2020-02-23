@@ -6,11 +6,11 @@ struct ReactionItem {
 }
 
 impl ReactionItem {
-    fn create_from( s: &str ) -> ReactionItem {
+    fn create_from(s: &str) -> ReactionItem {
         let mut el = s.split(' ');
         ReactionItem {
             amount: el.next().unwrap().parse::<i64>().unwrap(),
-            item: el.next().unwrap().to_string()
+            item: el.next().unwrap().to_string(),
         }
     }
 }
@@ -20,22 +20,33 @@ struct Reaction {
     inputs: Vec<ReactionItem>,
 }
 
-fn read_formulas( input: &str ) -> HashMap<String, Reaction> {
-    input.lines().map(|l| {
-        let mut it = l.split(" => ");
-        let inputs = it.next().unwrap().split(", ").map(ReactionItem::create_from).collect();
-        let output = ReactionItem::create_from(it.next().unwrap());
-        (output.item.clone(), Reaction{ output, inputs })
-    }).collect()
+fn read_formulas(input: &str) -> HashMap<String, Reaction> {
+    input
+        .lines()
+        .map(|l| {
+            let mut it = l.split(" => ");
+            let inputs = it
+                .next()
+                .unwrap()
+                .split(", ")
+                .map(ReactionItem::create_from)
+                .collect();
+            let output = ReactionItem::create_from(it.next().unwrap());
+            (output.item.clone(), Reaction { output, inputs })
+        })
+        .collect()
 }
 
-fn ore_for_fuel( formulas: &HashMap<String, Reaction>, fuel: i64 ) -> i64 {
+fn ore_for_fuel(formulas: &HashMap<String, Reaction>, fuel: i64) -> i64 {
     let mut required_items = HashMap::new();
     required_items.insert("FUEL".to_string(), fuel);
 
-    while let Some((required_item, required_amount)) = required_items.iter_mut().find(|(item, amount)| *item != "ORE" && **amount > 0) {
+    while let Some((required_item, required_amount)) = required_items
+        .iter_mut()
+        .find(|(item, amount)| *item != "ORE" && **amount > 0)
+    {
         let reaction = formulas.get(required_item).unwrap();
-            
+
         let n = (*required_amount - 1) / reaction.output.amount + 1;
         *required_amount -= reaction.output.amount * n;
         for input in reaction.inputs.iter() {
@@ -46,19 +57,21 @@ fn ore_for_fuel( formulas: &HashMap<String, Reaction>, fuel: i64 ) -> i64 {
     required_items["ORE"]
 }
 
-fn solve( input: &str, target: i64 ) -> (i64, i64) {
+fn solve(input: &str, target: i64) -> (i64, i64) {
     let formulas = read_formulas(input);
     let ore_for_1 = ore_for_fuel(&formulas, 1);
 
     let mut est_fuel = target / ore_for_1;
-    
+
     loop {
         let ore = ore_for_fuel(&formulas, est_fuel);
-        if ore > target { break; }
+        if ore > target {
+            break;
+        }
         est_fuel += std::cmp::max(1, (target - ore) / ore_for_1);
     }
-    
-    (ore_for_1, est_fuel-1)
+
+    (ore_for_1, est_fuel - 1)
 }
 
 fn main() {
@@ -72,11 +85,11 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn example01() {
-        assert_eq!(ore_for_fuel(&read_formulas(
-"10 ORE => 10 A
+        assert_eq!(ore_for_fuel(&read_formulas("\
+10 ORE => 10 A
 1 ORE => 1 B
 7 A, 1 B => 1 C
 7 A, 1 C => 1 D
@@ -86,8 +99,8 @@ mod tests {
 
     #[test]
     fn example02() {
-        assert_eq!(ore_for_fuel(&read_formulas(
-"9 ORE => 2 A
+        assert_eq!(ore_for_fuel(&read_formulas("\
+9 ORE => 2 A
 8 ORE => 3 B
 7 ORE => 5 C
 3 A, 4 B => 1 AB
@@ -98,8 +111,8 @@ mod tests {
 
     #[test]
     fn example03() {
-        assert_eq!(solve(
-"157 ORE => 5 NZVS
+        assert_eq!(solve("\
+157 ORE => 5 NZVS
 165 ORE => 6 DCFZ
 44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL
 12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ
@@ -112,8 +125,8 @@ mod tests {
 
     #[test]
     fn example04() {
-        assert_eq!(solve(
-"2 VPVL, 7 FWMGM, 2 CXFTF, 11 MNCFX => 1 STKFG
+        assert_eq!(solve("\
+2 VPVL, 7 FWMGM, 2 CXFTF, 11 MNCFX => 1 STKFG
 17 NVRVD, 3 JNWZP => 8 VPVL
 53 STKFG, 6 MNCFX, 46 VJHF, 81 HVMC, 68 CXFTF, 25 GNMV => 1 FUEL
 22 VJHF, 37 MNCFX => 5 FWMGM
@@ -129,8 +142,8 @@ mod tests {
 
     #[test]
     fn example05() {
-        assert_eq!(solve(
-"171 ORE => 8 CNZTR
+        assert_eq!(solve("\
+171 ORE => 8 CNZTR
 7 ZLQW, 3 BMBT, 9 XCVML, 26 XMNCP, 1 WPTQ, 2 MZWV, 1 RJRHP => 4 PLWSL
 114 ORE => 4 BHXH
 14 VRPVC => 6 BMBT

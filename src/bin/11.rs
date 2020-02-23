@@ -1,11 +1,11 @@
+use advent_of_code_2019::grid::{Direction::*, Grid, Location};
 use advent_of_code_2019::intcode::IntCode;
-use advent_of_code_2019::grid::{Grid, Location, Direction::*};
 
-fn paint( program: &[i64], g: &mut Grid ) {
+fn paint(program: &[i64], g: &mut Grid) {
     let mut c = IntCode::new(program);
-    let mut pos = Location{ x: 0, y: 0 };
+    let mut pos = Location { x: 0, y: 0 };
     let mut dir = Up;
-    
+
     while !c.is_halted() {
         match g.get(&pos) {
             Some('\u{2588}') => c.input.push_back(1),
@@ -27,7 +27,7 @@ fn paint( program: &[i64], g: &mut Grid ) {
     }
 }
 
-fn solve( input: &str ) -> (usize, String) {
+fn solve(input: &str) -> (usize, String) {
     let program: Vec<_> = input.trim().split(',').map(|s| s.parse::<i64>().unwrap()).collect();
     let mut g = Grid::new();
 
@@ -35,10 +35,10 @@ fn solve( input: &str ) -> (usize, String) {
     let painted = g.symbols.len();
 
     let mut g = Grid::new();
-    g.insert(Location{ x: 0, y: 0 }, '\u{2588}');
+    g.insert(Location { x: 0, y: 0 }, '\u{2588}');
     paint(&program, &mut g);
     let plate = g.to_string();
-    
+
     (painted, plate)
 }
 

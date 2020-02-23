@@ -1,18 +1,20 @@
 use advent_of_code_2019::intcode::IntCode;
 
-fn solve( input: &str ) -> (i64, i64) {
+fn solve(input: &str) -> (i64, i64) {
     let program: Vec<_> = input.trim().split(',').map(|s| s.parse::<i64>().unwrap()).collect();
-    let mut computers: Vec<_> = (0..50).map(|i| {
-        let mut c = IntCode::new(&program);
-        c.input.push_back(i as i64);
-        c.run();
-        c
-    }).collect();
+    let mut computers: Vec<_> = (0..50)
+        .map(|i| {
+            let mut c = IntCode::new(&program);
+            c.input.push_back(i as i64);
+            c.run();
+            c
+        })
+        .collect();
     let mut nat = (0, 0);
     let mut first_nat_received = None;
     let mut last_nat_sent = None;
     let mut idle;
-    
+
     loop {
         idle = true;
         for i in 0..50 {
@@ -47,7 +49,7 @@ fn solve( input: &str ) -> (i64, i64) {
             last_nat_sent = Some(nat);
         }
     }
-    
+
     (first_nat_received.unwrap().1, last_nat_sent.unwrap().1)
 }
 
