@@ -3,7 +3,7 @@ Here is yet another repository with solutions for the [Advent of Code 2019](http
 
 The solutions were designed to be self-contained (using _zero_ external crates), reasonably general (working on every valid input), compact and performant, without going overboard with error handling, custom types or traits.
 
-Highlights:
+## Highlights
  - A pretty generic approach for graph-related problems, reusing the same BFS/shortest-path code for day 15 (part 2), day 18, day 20, and reusing the same DFS/backtracking code for day 15 (part 1), day 17, day 25.
  - A clean implementation of the FFT of day 16, which gives the exact solution in O(n log(n)) time for every offset.
  - A generic solver for the text adventure of day 25.
