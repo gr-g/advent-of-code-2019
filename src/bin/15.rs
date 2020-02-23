@@ -51,17 +51,17 @@ impl Backtracking for ExplorerRobot {
         match self.computer.output.pop().unwrap() {
             0 => {
                 self.grid.insert(self.location.go(*action), '#');
-                return false;
+                false
             }
             1 => {
                 self.grid.insert(self.location.go(*action), '.');
                 self.location = self.location.go(*action);
-                return true;
+                true
             },
             2 => {
                 self.grid.insert(self.location.go(*action), 'O');
                 self.location = self.location.go(*action);
-                return true;
+                true
             },
             _ => panic!(),
         }
@@ -103,7 +103,7 @@ fn solve( input: &str ) -> (usize, usize) {
     robot.explore();
     println!("{}", robot.grid);
 
-    let oxigen_location = *robot.grid.find(&'O').unwrap();
+    let oxigen_location = *robot.grid.find('O').unwrap();
     let oxigen_distance = WalkableGrid(robot.grid).shortest_paths(oxigen_location, &[]);
 
     (

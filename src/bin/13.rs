@@ -28,16 +28,16 @@ impl Game {
     fn run( &mut self ) {
         self.computer.run();
         for cell in self.computer.output.chunks_exact(3) {
-            match cell {
-                &[-1, 0, v] => { self.score = v; },
-                &[x, y, 0] => { self.screen.remove(&Location{ x, y }); },
-                &[x, y, 1] => { self.screen.insert(Location{ x, y }, '#'); },
-                &[x, y, 2] => { self.screen.insert(Location{ x, y }, '\u{2588}'); },
-                &[x, y, 3] => {
+            match *cell {
+                [-1, 0, v] => { self.score = v; },
+                [x, y, 0] => { self.screen.remove(&Location{ x, y }); },
+                [x, y, 1] => { self.screen.insert(Location{ x, y }, '#'); },
+                [x, y, 2] => { self.screen.insert(Location{ x, y }, '\u{2588}'); },
+                [x, y, 3] => {
                     self.screen.insert(Location{ x, y }, '_');
                     self.paddle = (x, y);
                 },
-                &[x, y, 4] => {
+                [x, y, 4] => {
                     self.screen.insert(Location{ x, y }, 'o');
                     self.ball = (x, y);
                 },

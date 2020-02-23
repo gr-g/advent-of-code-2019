@@ -6,7 +6,7 @@ struct ReactionItem {
 }
 
 impl ReactionItem {
-    fn from_str( s: &str ) -> ReactionItem {
+    fn create_from( s: &str ) -> ReactionItem {
         let mut el = s.split(' ');
         ReactionItem {
             amount: el.next().unwrap().parse::<i64>().unwrap(),
@@ -23,8 +23,8 @@ struct Reaction {
 fn read_formulas( input: &str ) -> HashMap<String, Reaction> {
     input.lines().map(|l| {
         let mut it = l.split(" => ");
-        let inputs = it.next().unwrap().split(", ").map(ReactionItem::from_str).collect();
-        let output = ReactionItem::from_str(it.next().unwrap());
+        let inputs = it.next().unwrap().split(", ").map(ReactionItem::create_from).collect();
+        let output = ReactionItem::create_from(it.next().unwrap());
         (output.item.clone(), Reaction{ output, inputs })
     }).collect()
 }

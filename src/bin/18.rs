@@ -6,21 +6,21 @@ use advent_of_code_2019::graph::{UnweightedGraph, Graph};
 // bitmap operations to record added/missing keys
 fn set_missing( keys: &[char] ) -> u32 {
     let mut m = 0;
-    for c in keys { m |= key_to_bit(c) };
+    for c in keys { m |= key_to_bit(*c) };
     m
 }
 
-fn add_key( missing_keys: u32, key: &char ) -> u32 {
+fn add_key( missing_keys: u32, key: char ) -> u32 {
     missing_keys & !key_to_bit(key)
 }
 
-fn has_key( missing_keys: u32, key: &char ) -> bool {
+fn has_key( missing_keys: u32, key: char ) -> bool {
     missing_keys & key_to_bit(key) == 0
 }
 
-fn key_to_bit( key: &char ) -> u32 {
+fn key_to_bit( key: char ) -> u32 {
     match key {
-        'a' ..= 'z' => { 1 << (*key as u8 - b'a') },
+        'a' ..= 'z' => { 1 << (key as u8 - b'a') },
         _ => panic!(),
     }
 }
@@ -74,7 +74,7 @@ fn adjacency_matrix( grid: &Grid ) -> AdjacencyMatrix {
         for (i2, l2) in item_locations.iter() {
             if i1 != i2 {
                 if let Some(d) = dist.get(l2) {
-                    matrix.entry(*i1).or_insert(BTreeMap::new()).insert(*i2, *d);
+                    matrix.entry(*i1).or_insert_with(BTreeMap::new).insert(*i2, *d);
                 }
             }
         }
@@ -98,7 +98,7 @@ impl<'a> Graph<char> for AdjacencyMatrixWithKeys<'a> {
     fn edges( &self, node: &char ) -> Vec<(char, usize)> {
         let mut v = Vec::new();
         
-        if node.is_ascii_lowercase() && !has_key(self.1, &node) {
+        if node.is_ascii_lowercase() && !has_key(self.1, *node) {
             // found a new item, stop here
             return v;
         }
@@ -107,7 +107,7 @@ impl<'a> Graph<char> for AdjacencyMatrixWithKeys<'a> {
 
         // iterate over the keys reachable from the current position
         for (p, distance) in reachable.iter() {
-            if p.is_ascii_uppercase() && !has_key(self.1, &p.to_ascii_lowercase()) {
+            if p.is_ascii_uppercase() && !has_key(self.1, p.to_ascii_lowercase()) {
                 continue;
             }
             v.push((*p, *distance));
@@ -130,9 +130,9 @@ impl<'a> Graph<Node> for AdjacencyMatrix {
         
         // iterate over the keys reachable from the current position
         for (p, distance) in reachable.iter() {
-            if p.is_ascii_lowercase() && !has_key(node.missing_keys, p) {
+            if p.is_ascii_lowercase() && !has_key(node.missing_keys, *p) {
                 let position = *p;
-                let missing_keys = add_key(node.missing_keys, p);
+                let missing_keys = add_key(node.missing_keys, *p);
                 v.push((Node{ position, missing_keys }, *distance));
             }
         }
@@ -164,10 +164,10 @@ impl<'a> Graph<Node4> for AdjacencyMatrix {
         
             // iterate over the keys reachable from the current position
             for (p, distance) in reachable.iter() {
-                if p.is_ascii_lowercase() && !has_key(node.missing_keys, p) {
+                if p.is_ascii_lowercase() && !has_key(node.missing_keys, *p) {
                     let mut position = node.position;
                     position[i] = *p;
-                    let missing_keys = add_key(node.missing_keys, p);
+                    let missing_keys = add_key(node.missing_keys, *p);
                     v.push((Node4{ position, missing_keys }, *distance));
                 }
             }
@@ -225,12 +225,12 @@ fn min_distance4( area: &Grid ) -> usize {
 }
 
 fn solve( input: &str ) -> (usize, usize) {
-    let mut area = Grid::from_str(input);
+    let mut area = Grid::create_from(input);
 
     let min_distance = min_distance(&area);
 
     // change the map, splitting it into four
-    let entrance = *area.find(&'@').unwrap();
+    let entrance = *area.find('@').unwrap();
     area.insert(entrance, '#');
     area.insert(entrance.go(Up), '#');
     area.insert(entrance.go(Down), '#');
@@ -260,7 +260,7 @@ mod tests {
     
     #[test]
     fn example01() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 #########
 #b.A.@.a#
 #########");
@@ -270,7 +270,7 @@ mod tests {
 
     #[test]
     fn example02() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 ########################
 #f.D.E.e.C.b.A.@.a.B.c.#
 ######################.#
@@ -282,7 +282,7 @@ mod tests {
 
     #[test]
     fn example03() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 ########################
 #...............b.C.D.f#
 #.######################
@@ -294,7 +294,7 @@ mod tests {
 
     #[test]
     fn example04() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 #################
 #i.G..c...e..H.p#
 ########.########
@@ -310,7 +310,7 @@ mod tests {
 
     #[test]
     fn example05() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 ########################
 #@..............ac.GI.b#
 ###d#e#f################
@@ -323,7 +323,7 @@ mod tests {
 
     #[test]
     fn example06() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 #########
 #cBa@A.b#
 ####.#.##
@@ -336,7 +336,7 @@ mod tests {
 
     #[test]
     fn example07() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 #######
 #a.#Cd#
 ##1#2##
@@ -350,7 +350,7 @@ mod tests {
 
     #[test]
     fn example08() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 ###############
 #d.ABC.#.....a#
 ######1#2######
@@ -364,7 +364,7 @@ mod tests {
 
     #[test]
     fn example09() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 #############
 #DcBa.#.GhKl#
 #.###1#2#I###
@@ -378,7 +378,7 @@ mod tests {
 
     #[test]
     fn example10() {
-        let g = Grid::from_str("\
+        let g = Grid::create_from("\
 #############
 #g#f.D#..h#l#
 #F###e#E###.#

@@ -103,7 +103,7 @@ impl IntCode {
         for p in 0..op_len-1 {
             let ptr = self.ptr+1+p;
             addr[p] = match instr % 10 {
-                0 => self.memory[ptr].try_into().unwrap(),
+                0 => self.memory[ptr].try_into().expect("invalid address"),
                 1 => ptr,
                 2 => (self.base + self.memory[ptr]).try_into().unwrap(),
                 _ => panic!("invalid instruction {}", instr)

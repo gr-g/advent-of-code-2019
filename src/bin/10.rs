@@ -32,9 +32,9 @@ impl PartialOrd for IntegerRotation {
 struct AsteroidMap(HashSet<Location>);
 
 impl AsteroidMap {
-    fn from_str( s: &str ) -> AsteroidMap {
+    fn create_from( s: &str ) -> AsteroidMap {
         let mut asteroids = HashSet::new();
-        let g = Grid::from_str(s);
+        let g = Grid::create_from(s);
         for (l, c) in g.symbols.iter() {
             if c == &'#' {
                 asteroids.insert(*l);
@@ -66,20 +66,20 @@ impl AsteroidMap {
     }
 
     fn angle_from_vertical( &self, from: &Location, to: &Location ) -> IntegerRotation {
-        let a = to.x - from.x;
-        let b = - (to.y - from.y);
+        let x_diff = to.x - from.x;
+        let y_diff = - (to.y - from.y);
         
-        if a > 0 || (a == 0 && b > 0) {
+        if x_diff > 0 || (x_diff == 0 && y_diff > 0) {
             IntegerRotation {
                 n: self.asteroids_on_path(from, to) * 2,
-                a: a,
-                b: b,
+                a: x_diff,
+                b: y_diff,
             }
         } else {
             IntegerRotation {
                 n: self.asteroids_on_path(from, to) * 2 + 1,
-                a: -a,
-                b: -b,
+                a: -x_diff,
+                b: -y_diff,
             }
         }
     }    
@@ -109,7 +109,7 @@ fn nth_target<'a>( m: &'a AsteroidMap, station: &Location, n: usize ) -> &'a Loc
 }
 
 fn solve( input: &str, n: usize ) -> (usize, i64) {
-    let m = AsteroidMap::from_str(input);
+    let m = AsteroidMap::create_from(input);
 
     let (best_loc, visible_asteroids) = max_visibility(&m);
     let target_asteroid = nth_target(&m, best_loc, n);
@@ -132,7 +132,7 @@ mod tests {
     
     #[test]
     fn example01() {
-        let m = AsteroidMap::from_str("\
+        let m = AsteroidMap::create_from("\
 .#..#
 .....
 #####
@@ -143,7 +143,7 @@ mod tests {
 
     #[test]
     fn example02() {
-        let m = AsteroidMap::from_str("\
+        let m = AsteroidMap::create_from("\
 ......#.#.
 #..#.#....
 ..#######.
@@ -159,7 +159,7 @@ mod tests {
 
     #[test]
     fn example03() {
-        let m = AsteroidMap::from_str("\
+        let m = AsteroidMap::create_from("\
 #.#...#.#.
 .###....#.
 .#....#...
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn example04() {
-        let m = AsteroidMap::from_str("\
+        let m = AsteroidMap::create_from("\
 .#..#..###
 ####.###.#
 ....###.#.
@@ -191,7 +191,7 @@ mod tests {
 
     #[test]
     fn example05() {
-        let m = AsteroidMap::from_str("\
+        let m = AsteroidMap::create_from("\
 .#..##.###...#######
 ##.############..##.
 .#.######.########.#

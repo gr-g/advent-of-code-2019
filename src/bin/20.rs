@@ -11,8 +11,8 @@ struct GridWithPortals {
 }
 
 impl GridWithPortals {
-    fn from_str( s: &str ) -> GridWithPortals {
-        let grid = Grid::from_str(s);
+    fn create_from( s: &str ) -> GridWithPortals {
+        let grid = Grid::create_from(s);
         let mut inner_tag = HashMap::new();
         let mut inner_portal = HashMap::new();
         let mut outer_tag = HashMap::new();
@@ -134,7 +134,7 @@ impl UnweightedGraph<LayeredLocation> for GridWithPortals {
 }
 
 fn solve( input: &str ) -> (usize, usize) {
-    let g = GridWithPortals::from_str(input);
+    let g = GridWithPortals::create_from(input);
     println!("{}", g.grid);
     
     let start = g.outer_portal["AA"];
@@ -171,7 +171,7 @@ mod tests {
     
     #[test]
     fn example01() {
-        let g = GridWithPortals::from_str("
+        let g = GridWithPortals::create_from("
          A           
          A           
   #######.#########  
@@ -209,7 +209,7 @@ FG..#########.....#
 
     #[test]
     fn example02() {
-        let g = GridWithPortals::from_str("
+        let g = GridWithPortals::create_from("
                    A               
                    A               
   #################.#############  
@@ -255,7 +255,7 @@ YN......#               VT..#....QG
 
     #[test]
     fn example03() {
-        let g = GridWithPortals::from_str("
+        let g = GridWithPortals::create_from("
              Z L X W       C                 
              Z P Q B       K                 
   ###########.#.#.#.#######.###############  

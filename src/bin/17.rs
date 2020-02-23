@@ -105,10 +105,10 @@ fn plan_path( area: &Grid ) -> Vec<String> {
     // find the robot (position and direction) in the map
     let (mut pos, mut dir) = area.symbols.iter().find_map(|(location, value)| {
         match value {
-            '^' => Some((location.clone(), Up)),
-            'v' => Some((location.clone(), Down)),
-            '<' => Some((location.clone(), Left)),
-            '>' => Some((location.clone(), Right)),
+            '^' => Some((*location, Up)),
+            'v' => Some((*location, Down)),
+            '<' => Some((*location, Left)),
+            '>' => Some((*location, Right)),
             _ => None,
         }
     }).unwrap();
@@ -146,7 +146,7 @@ fn solve( input: &str ) -> (i64, i64) {
 
     // map the surroundings
     let mut computer = IntCode::new(&program);
-    let area = Grid::from_str(&computer.run_ascii_command("").0);
+    let area = Grid::create_from(&computer.run_ascii_command("").0);
 
     // compute the sum of the alignment parameters
     let alignment = alignment_parameters(&area);
@@ -154,7 +154,7 @@ fn solve( input: &str ) -> (i64, i64) {
     // plan the path of the robot
     let path = plan_path(&area);
     println!("Planned path for the robot: {:?}", path);
-    println!("");
+    println!();
 
     // compress the path
     let mut p = Compression::new(&path, 5);
@@ -187,7 +187,7 @@ mod tests {
     
     #[test]
     fn example01() {
-        let area = Grid::from_str("\
+        let area = Grid::create_from("\
 ..#..........
 ..#..........
 #######...###
@@ -200,7 +200,7 @@ mod tests {
 
     #[test]
     fn example02() {
-        let area = Grid::from_str("\
+        let area = Grid::create_from("\
 #######...#####
 #.....#...#...#
 #.....#...#...#

@@ -1,7 +1,7 @@
 use advent_of_code_2019::intcode::IntCode;
 use advent_of_code_2019::grid::{Grid, Location, Direction::*};
 
-fn paint( program: &Vec<i64>, g: &mut Grid ) {
+fn paint( program: &[i64], g: &mut Grid ) {
     let mut c = IntCode::new(program);
     let mut pos = Location{ x: 0, y: 0 };
     let mut dir = Up;

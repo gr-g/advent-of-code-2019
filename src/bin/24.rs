@@ -7,9 +7,9 @@ use advent_of_code_2019::grid::{Grid, Location, Direction::*};
 struct BugsMap(HashSet<(i64, Location)>);
 
 impl BugsMap {
-    fn from_str( s: &str ) -> BugsMap {
+    fn create_from( s: &str ) -> BugsMap {
         let mut bugs = HashSet::new();
-        let g = Grid::from_str(s);
+        let g = Grid::create_from(s);
         for (l, c) in g.symbols.iter() {
             if c == &'#' {
                 bugs.insert((0, *l));
@@ -197,7 +197,7 @@ impl BugsMap {
 }
 
 fn solve( input: &str, n: usize ) -> (usize, usize) {
-    let mut bugs = BugsMap::from_str(input);
+    let mut bugs = BugsMap::create_from(input);
     println!("{}", bugs.to_string());
 
     let mut seen_b = HashSet::new();
@@ -209,7 +209,7 @@ fn solve( input: &str, n: usize ) -> (usize, usize) {
     }
     //println!("{}", bugs.to_string());
 
-    let mut bugs = BugsMap::from_str(input);
+    let mut bugs = BugsMap::create_from(input);
     println!("{}", bugs.to_string_multilevel());
     for _ in 0..n {
         bugs.advance_multilevel();
@@ -233,7 +233,7 @@ mod tests {
     
     #[test]
     fn example01() {
-        let mut bugs = BugsMap::from_str("\
+        let mut bugs = BugsMap::create_from("\
 ....#
 #..#.
 #..##
@@ -290,7 +290,7 @@ mod tests {
 
     #[test]
     fn example02() {
-        let mut bugs = BugsMap::from_str("\
+        let mut bugs = BugsMap::create_from("\
 ....#
 #..#.
 #.?##

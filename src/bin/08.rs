@@ -19,11 +19,11 @@ impl SpaceImage {
     }
 
     fn compose_layers( &self ) -> Vec<u8> {
-        let mut res: Vec<u8> = vec![b'0'; self.width*self.height];
+        let mut res: Vec<u8> = vec![b'0'; self.width * self.height];
         
-        for i in 0..self.width*self.height {
-            res[i] = *self.data.iter().skip(i)
-                .step_by(self.width*self.height)
+        for (i, pixel) in res.iter_mut().enumerate() {
+            *pixel = *self.data.iter().skip(i)
+                .step_by(self.width * self.height)
                 .find(|&d| d != &b'2')
                 .unwrap_or(&b'0');
         }

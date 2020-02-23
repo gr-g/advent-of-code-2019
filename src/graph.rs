@@ -24,12 +24,9 @@ pub trait UnweightedGraph<N> where N: Eq + Hash + Clone {
                 break;
             }
             for n in self.edges(&node) {
-                match distances.entry(n) {
-                    Entry::Vacant(e) => {
-                        frontier.push_back(e.key().clone());
-                        e.insert(distance + 1);
-                    },
-                    _ => {},
+                if let Entry::Vacant(e) = distances.entry(n) {
+                    frontier.push_back(e.key().clone());
+                    e.insert(distance + 1);
                 }
             }
         }

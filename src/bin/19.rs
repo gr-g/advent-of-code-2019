@@ -1,7 +1,7 @@
 use advent_of_code_2019::intcode::IntCode;
 use advent_of_code_2019::grid::{Grid, Location};
 
-fn check_location( program: &Vec<i64>, x: i64, y: i64 ) -> bool {
+fn check_location( program: &[i64], x: i64, y: i64 ) -> bool {
     let mut ic = IntCode::new(program);
     ic.input.push_back(x);
     ic.input.push_back(y);

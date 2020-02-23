@@ -1,5 +1,5 @@
 fn to_six_digits( n: u32 ) -> [u32; 6] {
-    [n/100000 % 10, n/10000 % 10, n/1000 % 10, n/100 % 10, n/10 % 10, n % 10]
+    [n/100_000 % 10, n/10_000 % 10, n/1_000 % 10, n/100 % 10, n/10 % 10, n % 10]
 }
 
 fn is_valid1( p: &[u32; 6] ) -> bool {
@@ -21,8 +21,8 @@ fn is_valid2( p: &[u32; 6] ) -> bool {
     for i in 0..5 {
         if p[i+1] < p[i] { inc = false; }
     }
-    if (p[1] == p[0]) && (p[2] != p[1]) { dup = true; }
-    else if (p[5] == p[4]) && (p[4] != p[3]) { dup = true; }
+    if (p[1] == p[0] && p[2] != p[1]) ||
+       (p[5] == p[4] && p[4] != p[3]) { dup = true; }
     else {
         for i in 1..4 {
             if (p[i+1] == p[i]) && (p[i] != p[i-1]) && (p[i+2] != p[i+1]) { dup = true; }

@@ -144,7 +144,7 @@ impl Backtracking for Droid {
             },
             DroidAction::Drop(obj) => {
                 self.objects_carried.remove(obj);
-                self.computer.run_ascii_command(&format!("drop {}", obj)).0;
+                self.computer.run_ascii_command(&format!("drop {}", obj));
                 self.try_checkpoint();
             },
         }

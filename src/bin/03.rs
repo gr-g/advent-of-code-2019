@@ -7,7 +7,7 @@ struct Wire {
 }
  
 impl Wire {
-    fn from_str( s: &str ) -> Wire {
+    fn create_from( s: &str ) -> Wire {
         let mut w = Wire { tip: (0, 0), len: 0, path: HashMap::new() };
         for m in s.split(',') {
             let (d, n) = m.split_at(1);
@@ -27,8 +27,8 @@ impl Wire {
 fn solve( input: &str ) -> (i64, i64) {
     let input_lines: Vec<_> = input.lines().collect();
 
-    let w1 = Wire::from_str(input_lines[0]);
-    let w2 = Wire::from_str(input_lines[1]);
+    let w1 = Wire::create_from(input_lines[0]);
+    let w2 = Wire::create_from(input_lines[1]);
 
     let close_cross = w1.path.keys()
         .filter(|&p| w2.path.contains_key(p))

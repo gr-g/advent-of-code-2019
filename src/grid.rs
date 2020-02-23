@@ -10,7 +10,7 @@ pub enum Direction {
 }
 
 impl Direction {
-    pub fn left( &self ) -> Direction {
+    pub fn left( self ) -> Direction {
         match self {
             Self::Up => Self::Left,
             Self::Down => Self::Right,
@@ -19,7 +19,7 @@ impl Direction {
         }
     }
 
-    pub fn right( &self ) -> Direction {
+    pub fn right( self ) -> Direction {
         match self {
             Self::Up => Self::Right,
             Self::Down => Self::Left,
@@ -28,7 +28,7 @@ impl Direction {
         }
     }
 
-    pub fn reverse( &self ) -> Direction {
+    pub fn reverse( self ) -> Direction {
         match self {
             Self::Up => Self::Down,
             Self::Down => Self::Up,
@@ -55,6 +55,7 @@ impl Location {
     }
 }
 
+#[derive(Default)]
 pub struct Grid {
     pub symbols: HashMap<Location, char>,
 }
@@ -63,14 +64,14 @@ impl Grid {
     pub fn new() -> Grid {
         Grid { symbols: HashMap::new() }
     }
-    pub fn from_str( s: &str ) -> Grid {
+    pub fn create_from( s: &str ) -> Grid {
         let mut symbols = HashMap::new();
         let mut x = 0;
         let mut y = 0;
         for c in s.chars() {
             match c {
                 '\n' => { y += 1; x = 0; },
-                c @ _ => {
+                c => {
                     if !c.is_ascii_whitespace() {
                         symbols.insert(Location { x, y }, c);
                     }
@@ -101,8 +102,8 @@ impl Grid {
     pub fn remove( &mut self, l: &Location ) -> Option<char> {
         self.symbols.remove(l)
     }
-    pub fn find( &self, c: &char ) -> Option<&Location> {
-        self.symbols.iter().find(|&(_, sym)| sym == c ).map(|(loc, _)| loc)
+    pub fn find( &self, c: char ) -> Option<&Location> {
+        self.symbols.iter().find(|(_, sym)| **sym == c ).map(|(loc, _)| loc)
     }
 }
 
@@ -117,7 +118,7 @@ impl Display for Grid {
             for x in x0..=x1 {
                 write!(f, "{}", self.get(&Location{ x, y }).unwrap_or(&' '))?;
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
         Ok(())
     }

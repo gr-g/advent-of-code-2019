@@ -20,7 +20,7 @@ struct Moon {
 }
 
 impl Moon {
-    fn from_str( s: &str ) -> Moon {
+    fn create_from( s: &str ) -> Moon {
         let mut values = s[1..s.len()-1].split(", ").map(|e| e[2..].parse::<i64>().unwrap());
         Moon {
             pos: [values.next().unwrap(), values.next().unwrap(), values.next().unwrap()],
@@ -88,10 +88,10 @@ fn solve( input: &str, steps: usize ) -> (i64, usize) {
     let mut lines = input.lines();
     
     let mut system = [
-        Moon::from_str(lines.next().unwrap()),
-        Moon::from_str(lines.next().unwrap()),
-        Moon::from_str(lines.next().unwrap()),
-        Moon::from_str(lines.next().unwrap()),
+        Moon::create_from(lines.next().unwrap()),
+        Moon::create_from(lines.next().unwrap()),
+        Moon::create_from(lines.next().unwrap()),
+        Moon::create_from(lines.next().unwrap()),
     ];
 
     simulate(&mut system, steps)

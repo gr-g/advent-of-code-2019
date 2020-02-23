@@ -5,7 +5,7 @@ struct OrbitMap {
 }
 
 impl OrbitMap {
-    fn from_str( s: &str ) -> OrbitMap {
+    fn create_from( s: &str ) -> OrbitMap {
         let mut parents: HashMap<String, String> = HashMap::new();
         
         for line in s.lines() {
@@ -39,7 +39,7 @@ impl OrbitMap {
 }
 
 fn solve( input: &str ) -> (usize, usize) {
-    let om = OrbitMap::from_str(&input);
+    let om = OrbitMap::create_from(&input);
 
     let mut cache = HashMap::new();    
     let total_orbits = om.parents.keys()

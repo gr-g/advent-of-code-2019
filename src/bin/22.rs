@@ -17,7 +17,7 @@ impl Shuffle {
         Shuffle{ p, a: 1, b: 0 }
     }
     
-    fn from_str( p: i64, input: &str ) -> Shuffle {
+    fn create_from( p: i64, input: &str ) -> Shuffle {
         let mut shuffle = Shuffle::id(p);
         for s in input.lines() {
             if s.starts_with("deal into new stack") {
@@ -49,7 +49,7 @@ impl Shuffle {
     fn repeat( &mut self, times: i64 ) {
         assert!(times > 0);
         if times == 1 {
-            return;
+            // done
         } else if times % 2 == 0 {
             self.repeat(times/2);
             self.square();
@@ -71,7 +71,7 @@ fn solve( input: &str ) -> (i64, i64) {
     // Find where the card in position 2019 goes
     // after one application of the shuffle in input.
     let p = 10007;
-    let shuffle = Shuffle::from_str(p, input);
+    let shuffle = Shuffle::create_from(p, input);
     let new_position_2019 = shuffle.apply(2019);
 
     // Find the original position of the card that goes in position 2020
@@ -89,7 +89,7 @@ fn solve( input: &str ) -> (i64, i64) {
     // modular inverse.
     let p = 119315717514047;
     let r = 101741582076661;
-    let mut shuffle = Shuffle::from_str(p, input);
+    let mut shuffle = Shuffle::create_from(p, input);
     shuffle.repeat(p-1-r);
     let prev_position_2020 = shuffle.apply(2020);
     
@@ -110,7 +110,7 @@ mod tests {
     
     #[test]
     fn example01() {
-        let shuffle = Shuffle::from_str(10, "\
+        let shuffle = Shuffle::create_from(10, "\
 deal with increment 7
 deal into new stack
 deal into new stack");
@@ -120,7 +120,7 @@ deal into new stack");
 
     #[test]
     fn example02() {
-        let shuffle = Shuffle::from_str(10, "\
+        let shuffle = Shuffle::create_from(10, "\
 cut 6
 deal with increment 7
 deal into new stack");
@@ -130,7 +130,7 @@ deal into new stack");
 
     #[test]
     fn example03() {
-        let shuffle = Shuffle::from_str(10, "\
+        let shuffle = Shuffle::create_from(10, "\
 deal with increment 7
 deal with increment 9
 cut -2");
@@ -140,7 +140,7 @@ cut -2");
 
     #[test]
     fn example04() {
-        let shuffle = Shuffle::from_str(10, "\
+        let shuffle = Shuffle::create_from(10, "\
 deal into new stack
 cut -2
 deal with increment 7
