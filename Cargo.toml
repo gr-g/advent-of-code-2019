@@ -1,0 +1,5 @@
+[package]
+name = "advent-of-code-2019"
+version = "0.1.0"
+authors = ["Gregorio Guidi <24903276+gr-g@users.noreply.github.com>"]
+edition = "2018"
