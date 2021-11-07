@@ -7,10 +7,10 @@ struct ReactionItem {
 
 impl ReactionItem {
     fn create_from(s: &str) -> ReactionItem {
-        let mut el = s.split(' ');
+        let (amount, item) = s.split_once(' ').unwrap();
         ReactionItem {
-            amount: el.next().unwrap().parse::<i64>().unwrap(),
-            item: el.next().unwrap().to_string(),
+            amount: amount.parse().unwrap(),
+            item: item.to_string(),
         }
     }
 }
@@ -24,14 +24,12 @@ fn read_formulas(input: &str) -> HashMap<String, Reaction> {
     input
         .lines()
         .map(|l| {
-            let mut it = l.split(" => ");
-            let inputs = it
-                .next()
-                .unwrap()
+            let (inputs, output) = l.split_once(" => ").unwrap();
+            let inputs = inputs
                 .split(", ")
                 .map(ReactionItem::create_from)
                 .collect();
-            let output = ReactionItem::create_from(it.next().unwrap());
+            let output = ReactionItem::create_from(output);
             (output.item.clone(), Reaction { output, inputs })
         })
         .collect()

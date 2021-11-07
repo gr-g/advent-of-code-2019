@@ -9,10 +9,8 @@ impl OrbitMap {
         let mut parents: HashMap<String, String> = HashMap::new();
 
         for line in s.lines() {
-            let mut oit = line.split(')');
-            let o1 = oit.next().unwrap().to_string();
-            let o2 = oit.next().unwrap().to_string();
-            parents.entry(o2).or_insert(o1);
+            let (o1, o2) = line.split_once(')').unwrap();
+            parents.entry(o2.to_string()).or_insert(o1.to_string());
         }
 
         OrbitMap { parents }
